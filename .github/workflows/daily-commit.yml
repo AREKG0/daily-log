@@ -1,0 +1,30 @@
+name: daily-commit
+
+on:
+  schedule:
+    - cron: "30 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  COMMITS_PER_DAY: 8
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make commits
+        run: |
+          git config user.name "AREKG0"
+          git config user.email "194745896+AREKG0@users.noreply.github.com"
+          mkdir -p log
+          for i in $(seq 1 $COMMITS_PER_DAY); do
+            echo "- $(date -u +%F) entry $i" >> log/LOG.md
+            git add log/LOG.md
+            git commit -m "chore: daily log $(date -u +%F) #$i"
+          done
+      - name: Push
+        run: git push
